@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  rest-service:
+    build:
+      context: .
+      args:
+        APP_PORT: 8443
+        TINI_VERSION: v0.19.0
+        NPM_CONFIG_LOGLEVEL: info
+    environment:
+      APP_PORT: 8443
+      APP_HOST: 0.0.0.0
+      NODE_ENV: development
+    container_name: rest-service-compose
+    ports:
+      - "8443:8443"
+    restart: always
+  postgres:
+    image: postgres:12.3
+    shm_size: 256MB
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - "db:/var/lib/postgresql/data"
+      - "./db/initdb.d:/docker-entrypoint-initdb.d"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+networks:
+  default:
+    driver: overlay
+volumes:
+  db:
